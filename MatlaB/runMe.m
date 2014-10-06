@@ -22,13 +22,14 @@ fileCount=size(dataFiles,1);
 %work with ADCP
 for i=1:fileCount
     if ~isempty(strfind(dataFiles(i).name,'ADCP'))
-        [site_depth_at_deployment,adcpCurrentHor,adcpCurrentDir,adcpCurrentVert,...
-            adcpCurrentHorEast,adcpCurrentHorNorth,adcpBinDepth,adcpTime,adcpPitch,...
-            adcpRoll]=adcpCurrent([dataPath '\' dataFiles(i).name]);
+        [adcpCurrentHor,adcpCurrentDir,adcpCurrentNorth, adcpCurrentEast,adcpCurrentVert,acdpBinDepth,adcpTime,adcpPitch,adcpRoll]=...
+            adcpCurrent([dataPath '\' dataFiles(i).name]);
         roi=200:11900;
         adcpCurrentHor=adcpCurrentHor(:,roi);
-        adcpCurrentDir=adcpCurrentDir(roi);
-        adcpCurrentVert=adcpCurrentVert(roi);
+        adcpCurrentDir=adcpCurrentDir(:,roi);
+        adcpCurrentVert=adcpCurrentVert(:,roi);
+        adcpCurrentNorth=adcpCurrentNorth(:,roi);
+        adcpCurrentEast=adcpCurrentEast(:,roi);
         adcpTime=adcpTime(roi);
         adcpPitch=adcpPitch(roi);
         adcpRoll=adcpRoll(roi);
@@ -47,7 +48,29 @@ pNoTide=pressure(tideSignal, adcpTime, dataPath, dataFiles);
 %construct mooringLine profile
 sumOppSide= mooringLineProfile(pNoTide, 202);
 
-[x1,z1,current_profile_WHOI,current_profile_WHOI_East,current_profile_WHOI_North,time1]...
-    =select_poi(sumOppSide,site_depth_at_deployment,adcpTime,adcpCurrentHor,adcpCurrentHorEast,...
-    adcpCurrentHorNorth,pNoTide,adcpBinDepth);
+
+%fin min adnn max shift with usable current data...
+[minShiftIndex,maxShiftIndex]=  minMaxShiftIndex(adcpCurrentNorth,adcpCurrentEast,adcpCurrentVert,adcpPitch,adcpRoll,sumOppSide);
+plot(adcpTime',pNoTide','b');
+hold on;
+set(gca,'YDir','rev');
+plot(adcpTime(:,minShiftIndex)',pNoTide(:,minShiftIndex)','.r');
+plot(adcpTime(:,maxShiftIndex)',pNoTide(:,maxShiftIndex)','.r');
+
+xCurrent = 'x-current = ';
+for i=1: length(acdpBinDepth) 
+    if ~isnan(adcpCurrentEast(i,maxShiftIndex))
+        xCurrent = strcat(xCurrent, '(', num2str(acdpBinDepth(i)), ',', num2str(adcpCurrentEast(i,maxShiftIndex)), ')' );
+    end
+end
+xCurrent = strcat(xCurrent,'(202,0)');
+yCurrent = 'y-current = ';
+for i=1: length(acdpBinDepth)
+    if ~isnan(adcpCurrentNorth(i,maxShiftIndex))
+        yCurrent = strcat(yCurrent, '(', num2str(acdpBinDepth(i)), ',', num2str(adcpCurrentNorth(i,maxShiftIndex)), ')' );
+    end
+end
+yCurrent = strcat(yCurrent,'(202,0)');
+
+
 

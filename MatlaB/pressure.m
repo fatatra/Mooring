@@ -38,9 +38,9 @@ for i = 1:fileCount
         continue
     end
     %check if file got a CSPD data ie cur speed, adcp, if yes...next
-%     if any(strcmp({fileInfo.Variables.Name},'CSPD'))
-%         continue
-%     end
+    if any(strcmp({fileInfo.Variables.Name},'CSPD'))
+        continue
+    end
     %check if variables DEPTH is interpolated
     fileInfo=ncreadatt(dataFiles(i).name,'DEPTH','comment');
     %if pressure are interpolated a go to the next iteration
