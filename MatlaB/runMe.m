@@ -24,7 +24,7 @@ for i=1:fileCount
     if ~isempty(strfind(dataFiles(i).name,'ADCP'))
         [adcpCurrentHor,adcpCurrentDir,adcpCurrentNorth, adcpCurrentEast,adcpCurrentVert,acdpBinDepth,adcpTime,adcpPitch,adcpRoll]=...
             adcpCurrent([dataPath '\' dataFiles(i).name]);
-        roi=200:11900;
+        roi=200:6000;
         adcpCurrentHor=adcpCurrentHor(:,roi);
         adcpCurrentDir=adcpCurrentDir(:,roi);
         adcpCurrentVert=adcpCurrentVert(:,roi);
@@ -48,29 +48,14 @@ pNoTide=pressure(tideSignal, adcpTime, dataPath, dataFiles);
 %construct mooringLine profile
 sumOppSide= mooringLineProfile(pNoTide, 202);
 
+%create .cab files with x and y current to use in whoi cables
+createWhoiExperiment(adcpCurrentNorth,adcpCurrentEast,adcpCurrentVert,adcpPitch,adcpRoll,acdpBinDepth,sumOppSide,adcpTime,pNoTide)
 
-%fin min adnn max shift with usable current data...
-[minShiftIndex,maxShiftIndex]=  minMaxShiftIndex(adcpCurrentNorth,adcpCurrentEast,adcpCurrentVert,adcpPitch,adcpRoll,sumOppSide);
-plot(adcpTime',pNoTide','b');
-hold on;
-set(gca,'YDir','rev');
-plot(adcpTime(:,minShiftIndex)',pNoTide(:,minShiftIndex)','.r');
-plot(adcpTime(:,maxShiftIndex)',pNoTide(:,maxShiftIndex)','.r');
+%plot simulation
+plotSim
 
-xCurrent = 'x-current = ';
-for i=1: length(acdpBinDepth) 
-    if ~isnan(adcpCurrentEast(i,maxShiftIndex))
-        xCurrent = strcat(xCurrent, '(', num2str(acdpBinDepth(i)), ',', num2str(adcpCurrentEast(i,maxShiftIndex)), ')' );
-    end
-end
-xCurrent = strcat(xCurrent,'(202,0)');
-yCurrent = 'y-current = ';
-for i=1: length(acdpBinDepth)
-    if ~isnan(adcpCurrentNorth(i,maxShiftIndex))
-        yCurrent = strcat(yCurrent, '(', num2str(acdpBinDepth(i)), ',', num2str(adcpCurrentNorth(i,maxShiftIndex)), ')' );
-    end
-end
-yCurrent = strcat(yCurrent,'(202,0)');
+
+
 
 
 
