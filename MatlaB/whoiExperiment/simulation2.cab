@@ -1,0 +1,411 @@
+Problem Description
+    title = "PIL0200 1301"
+    type  = subsurface 
+
+Analysis Parameters
+    static-outer-iterations = 100
+    static-iterations       = 500
+    static-relaxation       = 1
+    static-tolerance	        = 1e-6
+    static-outer-tolerance  = 1e-2
+    current-steps           = 10
+
+    duration                = 250
+    time-step               = 0.1
+    dynamic-relaxation      = 1.0
+    dynamic-iterations      = 40
+    dynamic-tolerance       = 1e-6
+    ramp-time               = 10.0
+
+    static-initial-guess    = shooting
+
+Environment
+    rho              = 1025
+    gravity          = 9.81
+
+ 
+x-current =(35.07,0.105)(45.07,0.109)(55.07,0.108)(65.07,0.075)(75.07,0.076)(85.07,-0.024)(95.07,0.013)(105.07,0.008)(115.07,-0.029)(125.07,-0.047)(135.07,-0.021)(145.07,-0.007)(155.07,-0.009)(165.07,-0.01)(175.07,0.044)(202,0)y-current =(35.07,0.038)(45.07,0.057)(55.07,0.009)(65.07,-0.015)(75.07,0.017)(85.07,0.032)(95.07,0.053)(105.07,0.072)(115.07,0.116)(125.07,0.108)(135.07,0.08)(145.07,0.059)(155.07,0.056)(165.07,0.051)(175.07,0.09)(202,0)
+
+    depth            = 202
+    input-type       = random
+    forcing-method   = morison
+   /* x-wave           = (2, 16, 0.0)   /* amplitude, period, zero phase */
+    bottom-stiffness = 1000.0
+    bottom-damping   = 0.0
+    
+Buoys
+    Float   type = sphere
+                m = 0.4
+		  buoyancy = 9	
+                d = 0.3
+                Cdn = 1   Cdt = 0.6   
+                comment = "WEIGHT NOT CHECKED"
+ Anchors
+   Train_wheel  m = 500
+
+ Connectors
+   Bow_shackle_7/16in   d   = 0.0158    Cdn = 0.1
+       	         m   = 0.57
+		         comment = "1.5ton limit load"
+   
+   Swivel   		  d   = 0.001     Cdn = 0.5
+                       m   = 0.9
+                       comment = "1.0ton limit load"
+
+   Mclane_Buoy  m = 75	wet = -151*9.8
+                d = 0.76
+                Cdn = 2   Cdt = 0.6   
+                comment = "WEIGHT NOT CHECKED"
+
+   MF40_QM75   d = 1.016       Cdn = 2
+                m = 356.0      wet = -197*9.8
+
+                comment = "specifications include ADCP installed on the buoy"
+
+
+
+
+
+Materials       
+   chain_13mm    EA = 9.563e6    EI = 1e-4            GJ = 1e-4
+                 m = 4                        
+                 d = 0.05     Cdt = 0.05         Cdn = 1
+                                Cat = 0.1          Can = 1.0
+                 comment = "13mm diam 4kg per meter"
+
+   torqbal_5/16in  EA = 3.434e+06  EI = 1.0        GJ = 1.0
+                 m = 0.3                     wet = 2.5
+                 d = 0.00794    Cdn = 4       Cdt = 0.005
+                                Can = 1.0       Cat = 0.0
+                 comment = "7.94mm torque balanced wire rope (WRCA)"
+  
+   yalex_3/8in   EA = 129840     EI = 0.01       GJ = 0.01
+                 m = 0.0580                     wet = -0.1
+                 d = 0.00953    Cdn = 2     Cdt = 0.005
+                 Can = 1.0       Cat = 0.0
+                 comment = "wet changed"
+
+   Dual_ACR_866 EA = 5.0e7         EI = 10000        GJ = 10000
+                 m = 36                          
+                 d = 0.30         Cdt = 0.05        Cdn = 2
+                 length = 0.66    Cat = 0.01        Can = 1.0
+                 comment = " NEEDS DEFINE EA EI GJ"
+
+   sbe39_plastic   d = 0.048 Cdn = 2
+                   m = 1.2        
+		     EA = 5.0e7         EI = 10000        GJ = 10000
+			comment = " NEEDS DEFINE EA EI GJ"
+
+   sbe37_plastic   d = 0.014  Cdn = 2
+                    m = 3.5    
+		      EA = 5.0e7         EI = 10000        GJ = 10000
+			comment = " NEEDS DEFINE EA EI GJ"
+ 
+
+   
+   sbe56   d = 0.063  Cdn = 2
+           m = 0.2        
+	    EA = 5.0e7         EI = 10000        GJ = 10000
+		comment = " NEEDS DEFINE EA EI GJ"
+
+   
+
+
+   
+      
+ Layout
+   terminal = {
+       anchor = Train_wheel
+               }
+
+   segment = {          
+       length      = 2
+       material    = chain_13mm 
+       nodes       = (3, 1.0)
+          }
+
+   connector = Swivel
+
+   segment = {          
+       length      = 2
+       material    = chain_13mm 
+       nodes       = (3, 1.0)
+          }
+
+   segment = {          
+       length      = 1
+       material    = Dual_ACR_866
+       nodes       = (2, 1.0) 
+          }
+
+   segment = {          
+       length      = 2
+       material    = chain_13mm 
+       nodes       = (3, 1.0)
+          }
+
+   connector = MF40_QM75 
+
+   
+   segment = {          
+       length      = 20
+       material    = torqbal_5/16in
+       nodes       = (21, 1.0) 
+          }
+   
+   segment = {          
+       length      = 0.3            
+       material    = sbe56
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.7
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.56            
+       material    = sbe37_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.44
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.23            
+       material    = sbe39_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.7
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.56            
+       material    = sbe37_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.44
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.23            
+       material    = sbe39_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.7
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.23            
+       material    = sbe39_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.7
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.56            
+       material    = sbe37_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.44
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.23            
+       material    = sbe39_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.7
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.56            
+       material    = sbe37_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.44
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.23            
+       material    = sbe39_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.7
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.56            
+       material    = sbe37_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.44
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.23            
+       material    = sbe39_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.7
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.56            
+       material    = sbe37_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.44
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.23            
+       material    = sbe39_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.7
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.56            
+       material    = sbe37_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.44
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.23            
+       material    = sbe39_plastic
+       nodes       = (2, 1.0)
+          }
+   
+   segment = {          
+       length      = 9.7
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 0.56            
+       material    = sbe37_plastic
+       nodes       = (2, 1.0)
+          }
+
+   segment = {          
+       length      = 9.44
+       material    = torqbal_5/16in
+       nodes       = (10, 1.0) 
+          }
+
+   segment = {          
+       length      = 1
+       material    = chain_13mm
+       nodes       = (2, 1.0) 
+          }
+
+   connector = Mclane_Buoy
+
+   segment = {          
+       length      = 6
+       material    = yalex_3/8in
+       nodes       = (7, 1.0) 
+          }
+   
+   terminal = {
+       buoy   = Float
+         }
+
+End
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
